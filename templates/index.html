@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-
-<html>
 {% extends "base.html" %}
 {% block content %}
-	{% for key in title_lsit %}
-			{{ key }}
-			
-	{% endfor%}
+	{% for key in title_list %}
+	<ul>
+		<li>titile:{{ key }}</li>
+	</ul>
+	{% endfor %}
 {% endblock %}
-
-</html>
