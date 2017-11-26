@@ -4,10 +4,22 @@
 from flask import Flask, render_template, url_for, redirect
 import os, json
 from collections import OrderedDict
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+baseURL = 'mysql://root:@localhost/news'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 
+db = SQLAlchemy(app)
+
+class File(db.Model):
+	__tablename__ = 'file'
+	id = id.Column(db.Integer, primary_key=True)
+	title = id.Column(db.String(80))
+	create_time = id.Column(db.Datetime)
+	category_id = id.Column(db.Integer, db.ForeignKey('category.id'))
+	
 class Analyze_json:
 	def __init__(self,path):
 		self._file_dict = dict()
