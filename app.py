@@ -6,6 +6,7 @@ import os, json
 from collections import OrderedDict
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime,timedelta
+from pymongo import MongoClient
 
 app = Flask(__name__)
 baseURL = 'mysql://root:@localhost/news'
@@ -13,6 +14,8 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 
 db = SQLAlchemy(app)
+client = MongoClient('127.0.0.1',27017)
+mongo = client.news_tag
 
 class File(db.Model):
 	__tablename__ = 'file'
@@ -24,13 +27,33 @@ class File(db.Model):
 	content = db.Column(db.Text)
 	category = db.relationship('Category',backref='files')
 
-	def __init__(self,title,create_time,category,content,):
+	def __init__(self,title,category,content,create_time=None):
 		self.title = title
 		self.category = category
 		self.content = content
-		# if create_time is None:
-		# 	create_time = datetime.utcnow()
+		if create_time is None:
+			create_time = datetime.utcnow()
 		self.create_time = create_time
+
+	def add_tag(self, tag_name):
+		for tag in mongo.tags.find({'file_id':self.id}):
+			if tag_name == tag.get(tag):
+				print('Article already had %s' %tag_name)
+			else:
+				data = {'file_id':self.id,'tag':tag_name}
+				mongo.tags.insert_one(data)
+
+	def remove_tag(self, tag_name):
+		data = {'file_id':self.id,'tag':tag_name}
+		mongo.tags.delete_one(data)
+
+	@property
+	def tags(self):
+		self.tag_list = list()
+		data = {'file_id':self.id}
+		for tag in mongo.tags.find(data):
+			self.tag_list.append(tag.get('tag'))
+		return self.tag_list
 
 	def __repr__(self):
 		return "<File(title=%r)>" %self.title
