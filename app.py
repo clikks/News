@@ -5,7 +5,7 @@ from flask import Flask, render_template, url_for, redirect
 import os, json
 from collections import OrderedDict
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime,timedelta
 
 app = Flask(__name__)
 baseURL = 'mysql://root:@localhost/news'
@@ -74,6 +74,11 @@ class Category(db.Model):
 
 # ALL_JSON_INFO = Analyze_json('/home/shiyanlou/files').json_dict
 
+def format_time(time):
+	CST = time + timedelta(hours=8)
+	time = datetime.strftime(CST,'%Y-%m-%d %H:%M:%S')
+	return time
+app.add_template_filter(format_time)
 
 @app.route('/')
 def index():
@@ -87,20 +92,17 @@ def index():
 @app.route('/files/<file_id>')
 def file(file_id):
 	# article = dict()
-	All_rticle_id = db.session.query(File.id).all()
+	All_article_id = db.session.query(File.id).all()
 	article_id_list = [i[0] for i in All_article_id]
 	
-	if fileid in article_id_list:
-		article = File.query.filter(File.id==file_id)
+	if int(file_id) in article_id_list:
+		article = File.query.filter(File.id==file_id).first()
 		# value = ALL_JSON_INFO.get(filename)
 		# article = ALL_JSON_INFO.get(filename)
 		return render_template('file.html',article=article)
 	else:
 		return render_template('404.html')
 
-@app.errorhandler(404)
-def not_found(error):
-	return render_template('404.html'),404
 @app.errorhandler(404)
 def not_found(error):
 	return render_template('404.html'),404

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1> title:{{ article.get('title') }} </h1>
-	<h2 id='time'> created time: {{ article.get('created_time') }}</h2>
-	{% for line in article.get('content').split('\\n') %}
-		<p id='content'>{{ line.replace('\\','') }} </p>
-	{% endfor %}
+	<h1> title:{{ article.title }} </h1>
+	<h2 id='time'> created time: {{ article.create_time | format_time }}</h2>
+	<p> Category: {{ article.category.name }}</p>
+	<p> {{ article.content }}</p>
+	
 {% endblock %}
