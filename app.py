@@ -9,13 +9,14 @@ from datetime import datetime,timedelta
 from pymongo import MongoClient
 
 app = Flask(__name__)
-baseURL = 'mysql://root:@localhost/news'
+#baseURL = 'mysql://root:@localhost/news'
+baseURL = 'mysql+pymysql://root:clikks@localhost/news'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
-
-db = SQLAlchemy(app)
 client = MongoClient('127.0.0.1',27017)
 mongo = client.news_tag
+
+db = SQLAlchemy(app)
 
 class File(db.Model):
 	__tablename__ = 'file'
@@ -26,6 +27,7 @@ class File(db.Model):
 	category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 	content = db.Column(db.Text)
 	category = db.relationship('Category',backref='files')
+
 
 	def __init__(self,title,category,content,create_time=None):
 		self.title = title
