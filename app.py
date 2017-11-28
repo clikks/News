@@ -10,8 +10,8 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 baseURL = 'mysql://root:@localhost/news'
-#baseURL = 'mysql+pymysql://root:clikks@localhost/news'
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+baseURL = 'mysql+pymysql://root:clikks@localhost/news'
+#app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 client = MongoClient('127.0.0.1',27017)
 mongo = client.news_tag
@@ -114,13 +114,19 @@ def index():
 	# for value in ALL_JSON_INFO.values():
 	# 	title = value.get('title')
 	# 	TITLE_LIST.append(title)
-	tag_list = []
+	tag_list = list()
+	tag_dict = dict()
 	TITLE_LIST = db.session.query(File.title,File.id).all()
-	file_tag = tags.find({'file_id':1})
-	for title in TITLE_LIST:
-		for tag in file_tag:
-			tag_list.append(tag.get('tag'))
-		TITLE_LIST.append(tag_list)
+	file_id = [i[1] for i in TITLE_LIST]
+	for id in file_id:
+		tag_filter = {'file_id':id}
+		file_tag = tags.find(tag_filter)
+		for t in file_tag:
+			result = t.get('tag')
+			tag_list.append(result)
+		tag_dict[id] = tag_list
+		
+	TITLE_LIST.append(tag_dict)
 	return render_template('index.html', title_list = TITLE_LIST)
 
 @app.route('/files/<file_id>')
@@ -140,3 +146,6 @@ def file(file_id):
 @app.errorhandler(404)
 def not_found(error):
 	return render_template('404.html'),404
+
+app.run(host='0.0.0.0')
+#manager.add_command('app',Server(host='0.0.0.0'))

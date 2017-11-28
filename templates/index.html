@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-	{% for key in title_list %}
+	{% for key in title_list[:-1] %}
 	<ul>
 		<li>
+			<p>{{ key,key[0],key[1],title_list }}</p>
 			<a href={{ url_for('file',file_id=key[1])}}>{{ key[0] }}</a>
-			<p>tags: {{ key[2] }}</p>	
+			<p>tags: {{ title_list[-1].get(key[1]) }}</p>	
 		</li>
 	</ul>
 	{% endfor %}
