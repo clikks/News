@@ -3,7 +3,9 @@
 	{% for key in title_list %}
 	<ul>
 		<li>
-			<a href={{ url_for('file',file_id=key[1])}}>{{ key[0] }}</a></li>
+			<a href={{ url_for('file',file_id=key[1])}}>{{ key[0] }}</a>
+			<p>tags: {{ title_list[2] }}</p>	
+		</li>
 	</ul>
 	{% endfor %}
 {% endblock %}

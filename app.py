@@ -9,13 +9,13 @@ from datetime import datetime,timedelta
 from pymongo import MongoClient
 
 app = Flask(__name__)
-#baseURL = 'mysql://root:@localhost/news'
-baseURL = 'mysql+pymysql://root:clikks@localhost/news'
+baseURL = 'mysql://root:@localhost/news'
+#baseURL = 'mysql+pymysql://root:clikks@localhost/news'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 client = MongoClient('127.0.0.1',27017)
 mongo = client.news_tag
-
+tags = mongo.tags
 db = SQLAlchemy(app)
 
 class File(db.Model):
@@ -38,22 +38,25 @@ class File(db.Model):
 		self.create_time = create_time
 
 	def add_tag(self, tag_name):
-		for tag in mongo.tags.find({'file_id':self.id}):
-			if tag_name == tag.get(tag):
+		count = 0
+		for tag in tags.find({'file_id':self.id}):
+			if tag_name == tag.get('tag'):
 				print('Article already had %s' %tag_name)
-			else:
-				data = {'file_id':self.id,'tag':tag_name}
-				mongo.tags.insert_one(data)
+				count = 1
+
+		if count == 0:
+			data = {'file_id':self.id,'tag':tag_name}
+			tags.insert_one(data)
 
 	def remove_tag(self, tag_name):
 		data = {'file_id':self.id,'tag':tag_name}
-		mongo.tags.delete_one(data)
+		tags.delete_one(data)
 
 	@property
 	def tags(self):
 		self.tag_list = list()
 		data = {'file_id':self.id}
-		for tag in mongo.tags.find(data):
+		for tag in tags.find(data):
 			self.tag_list.append(tag.get('tag'))
 		return self.tag_list
 
@@ -111,7 +114,13 @@ def index():
 	# for value in ALL_JSON_INFO.values():
 	# 	title = value.get('title')
 	# 	TITLE_LIST.append(title)
+	tag_list = []
 	TITLE_LIST = db.session.query(File.title,File.id).all()
+	file_tag = tags.find({'file_id':1})
+	for title in TITLE_LIST:
+		for tag in file_tag:
+			tag_list.append(tag.get('tag'))
+		TITLE_LIST.append(tag_list)
 	return render_template('index.html', title_list = TITLE_LIST)
 
 @app.route('/files/<file_id>')
