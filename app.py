@@ -9,8 +9,8 @@ from datetime import datetime,timedelta
 from pymongo import MongoClient
 
 app = Flask(__name__)
-#baseURL = 'mysql://root:@localhost/news'
-baseURL = 'mysql+pymysql://root:clikks@localhost/news'
+baseURL = 'mysql://root:@localhost/news'
+#baseURL = 'mysql+pymysql://root:clikks@localhost/news'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 client = MongoClient('127.0.0.1',27017)
@@ -75,6 +75,22 @@ class Category(db.Model):
 	def __repr__(self):
 		return "<Category(name=%r)>" %self.name
 
+def add_data():
+	db.create_all()
+	java = Category('Java')
+	python = Category('Python')
+	file1 = File('Hello Java', java, 'File Content - Java is cool!')
+	file2 = File('Hello Python', python, 'File Content - Python is cool!')
+	db.session.add(java)
+	db.session.add(python)
+	db.session.add(file1)
+	db.session.add(file2)
+	db.session.commit()
+	file1.add_tag('tech')
+	file1.add_tag('java')
+	file1.add_tag('linux')
+	file2.add_tag('tech')
+	file2.add_tag('python')
 # class Analyze_json:
 # 	def __init__(self,path):
 # 		self._file_dict = dict()
@@ -146,5 +162,5 @@ def file(file_id):
 def not_found(error):
 	return render_template('404.html'),404
 
-app.run(host='0.0.0.0')
+#app.run(host='0.0.0.0')
 #manager.add_command('app',Server(host='0.0.0.0'))
