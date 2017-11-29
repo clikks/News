@@ -114,20 +114,19 @@ def index():
 	# for value in ALL_JSON_INFO.values():
 	# 	title = value.get('title')
 	# 	TITLE_LIST.append(title)
-	tag_list = list()
 	tag_dict = dict()
 	TITLE_LIST = db.session.query(File.title,File.id).all()
 	file_id = [i[1] for i in TITLE_LIST]
 	for id in file_id:
-		tag_filter = {'file_id':id}
-		file_tag = tags.find(tag_filter)
+		tag_list = []
+		file_tag = tags.find({'file_id':id})
 		for t in file_tag:
-			result = t.get('tag')
-			tag_list.append(result)
+			tag_list.append(t.get('tag'))
 		tag_dict[id] = tag_list
 		
-	TITLE_LIST.append(tag_dict)
-	return render_template('index.html', title_list = TITLE_LIST)
+	#TITLE_LIST.append(tag_dict)
+
+	return render_template('index.html', **{'title_list':TITLE_LIST,'tag_dict':tag_dict})
 
 @app.route('/files/<file_id>')
 def file(file_id):
