@@ -1,7 +1,18 @@
 {% extends "base.html" %}
+{% block nav %}
+  <li role="presentation"><a href={{ url_for('index') }}>首页</a></li>
+  <li role="presentation" class="active"><a href="#">文章</a></li>
+  <li role="presentation"><a href="#">关于</a></li>
+{% endblock %}
+
 {% block content %}
-	<h1> title:{{ article.title }} </h1>
-	<h2 id='time'> created time: {{ article.create_time | format_time }}</h2>
+  <div class="page-header">
+	<h1> {{ article.title }}
+      <br>
+      <small>{{ article.create_time | format_time }}</small>
+    </h1>
+  </div>
+  <div 
 	<p> Category: {{ article.category.name }}</p>
 	<p> {{ article.content }}</p>
 	

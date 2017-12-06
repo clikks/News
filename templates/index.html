@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 	{% for key in title_list  %}
-	<ul>
-		<li>
-			<a href={{ url_for('file',file_id=key[1])}}>{{ key[0] }}</a>
-			<p>tags: {{ tag_dict.get(key[1]) }}</p>	
-		</li>
-	</ul>
+    <div class="row">
+      <div class="col-md-9">
+        <div class="page-header">
+          <h1>
+          <a href={{ url_for('file',file_id=key[1]) }}>{{ key[0] }}</a>
+          </h1>
+          <div style="height:10px"></div>
+          {% for tag in tag_dict.get(key[1]) %}
+          <nobr><span class="label label-info">{{ tag }}</span></nobr>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-md-3">
+      </div>
+    </div>
 	{% endfor %}
 {% endblock %}
