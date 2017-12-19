@@ -10,7 +10,7 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 #baseURL = 'mysql://root:@localhost/news'
-baseURL = 'mysql+pymysql://root:clikks@localhost/news'
+baseURL = 'mysql+pymysql://root:password@localhost/news'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = baseURL
 client = MongoClient('127.0.0.1',27017)
